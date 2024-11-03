@@ -53,6 +53,48 @@ class Paper {
       }
     })
 
+document.addEventListener('DOMContentLoaded', (event) => {
+  const paper = document.querySelector('.paper');
+  let isDragging = false;
+  let startX, startY, initialX, initialY;
+
+  function onPointerDown(e) {
+    isDragging = true;
+    startX = e.clientX - initialX;
+    startY = e.clientY - initialY;
+    paper.setPointerCapture(e.pointerId);
+  }
+
+  function onPointerMove(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    initialX = e.clientX - startX;
+    initialY = e.clientY - startY;
+    const transform = `translate(${initialX}px, ${initialY}px) rotateZ(-5deg)`;
+    paper.style.transform = transform;
+  }
+
+  function onPointerUp(e) {
+    isDragging = false;
+    paper.releasePointerCapture(e.pointerId);
+  }
+
+  // Initialize the initial position
+  let rect = paper.getBoundingClientRect();
+  initialX = rect.left;
+  initialY = rect.top;
+
+  // Add event listeners
+  paper.addEventListener('pointerdown', onPointerDown);
+  paper.addEventListener('pointermove', onPointerMove);
+  paper.addEventListener('pointerup', onPointerUp);
+  paper.addEventListener('pointercancel', onPointerUp);
+
+  // Prevent default touch behavior
+  paper.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+});
+
+
     paper.addEventListener('touchstart', (e) => {
       if(this.holdingPaper) return; 
       this.holdingPaper = true;
